@@ -130,29 +130,31 @@ describeMT(
     });
     describe("map fields", () => {
       const w = new messageType({
-        mapBoolValueField: {
-          foo: new BoolValue({ value: true }),
-          bar: new BoolValue({ value: false }),
-        },
+        mapBoolValueField: new Map([
+          ["foo", new BoolValue({ value: true })],
+          ["bar", new BoolValue({ value: false })],
+        ]),
       });
       test("construct as expected", () => {
-        expect(w.mapBoolValueField["foo"].value).toBe(true);
-        expect(w.mapBoolValueField["bar"].value).toBe(false);
+        expect(w.mapBoolValueField.get("foo")?.value ?? false).toBe(true);
+        expect(w.mapBoolValueField.get("bar")?.value ?? false).toBe(false);
       });
       test("clone as expected", () => {
         const wClone = w.clone();
-        expect(wClone.mapBoolValueField["foo"].value).toBe(true);
-        expect(wClone.mapBoolValueField["bar"].value).toBe(false);
+        expect(wClone.mapBoolValueField.get("foo")?.value ?? false).toBe(true);
+        expect(wClone.mapBoolValueField.get("bar")?.value ?? false).toBe(false);
       });
       test("serialize to binary", () => {
         const wBinary = messageType.fromBinary(w.toBinary());
-        expect(wBinary.mapBoolValueField["foo"].value).toBe(true);
-        expect(wBinary.mapBoolValueField["bar"].value).toBe(false);
+        expect(wBinary.mapBoolValueField.get("foo")?.value ?? false).toBe(true);
+        expect(wBinary.mapBoolValueField.get("bar")?.value ?? false).toBe(
+          false
+        );
       });
       test("serialize to JSON", () => {
         const wJson = messageType.fromJsonString(w.toJsonString());
-        expect(wJson.mapBoolValueField["foo"].value).toBe(true);
-        expect(wJson.mapBoolValueField["bar"].value).toBe(false);
+        expect(wJson.mapBoolValueField.get("foo")?.value ?? false).toBe(true);
+        expect(wJson.mapBoolValueField.get("bar")?.value ?? false).toBe(false);
       });
     });
   }

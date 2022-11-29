@@ -70,7 +70,7 @@ export declare class Struct extends Message<Struct> {
    *
    * @generated from field: map<string, google.protobuf.Value> fields = 1;
    */
-  fields: { [key: string]: Value };
+  fields: Map<string, Value>;
 
   constructor(data?: PartialMessage<Struct>);
 

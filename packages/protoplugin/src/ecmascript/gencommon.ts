@@ -215,7 +215,8 @@ export function getFieldTyping(
           valueType = file.import(field.mapValue.enum).toTypeOnly();
           break;
       }
-      typing.push("{ [key: ", keyType, "]: ", valueType, " }");
+      // typing.push("{ [key: ", keyType, "]: ", valueType, " }");
+      typing.push("Map<", keyType, ", ", valueType, ">");
       optional = false;
       break;
     }
@@ -335,7 +336,7 @@ export function getFieldIntrinsicDefaultValue(field: DescField): {
   }
   if (field.fieldKind == "map") {
     return {
-      defaultValue: "{}",
+      defaultValue: "new Map();",
       typingInferrable: false,
     };
   }

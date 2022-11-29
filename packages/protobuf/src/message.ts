@@ -171,6 +171,7 @@ type PlainField<F> =
   : F extends OneofSelectedMessage<infer C, infer V> ? { case: C; value: PlainField<V> }
   : F extends { case: string | undefined; value?: unknown } ? F
   : F extends { [key: string|number]: Message<infer U> } ? { [key: string|number]: PlainField<U> }
+  : F extends Map<infer K, infer V> ? Map<K, PlainField<V>>
   : F ;
 
 /**
@@ -198,6 +199,7 @@ type PartialField<F> =
   : F extends OneofSelectedMessage<infer C, infer V> ? {case: C; value: PartialMessage<V>}
   : F extends { case: string | undefined; value?: unknown; } ? F
   : F extends {[key: string|number]: Message<infer U>} ? {[key: string|number]: PartialMessage<U>}
+  : F extends Map<infer K, infer V> ? Map<K, PlainField<V>>
   : F ;
 
 type OneofSelectedMessage<K extends string, M extends Message<M>> = {

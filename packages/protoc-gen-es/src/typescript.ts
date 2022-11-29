@@ -401,7 +401,7 @@ function generateWktMethods(schema: Schema, f: GeneratedFile, message: DescMessa
       f.print(`      throw new Error("cannot decode `, message.typeName, ` from JSON " + `, protoN, `.json.debug(json));`)
       f.print("    }")
       f.print("    for (const [k, v] of Object.entries(json)) {")
-      f.print("      this.", localName(ref.fields), "[k] = ", ref.fields.mapValue.message ?? "", ".fromJson(v);")
+      f.print("      this.", localName(ref.fields), ".set(k, ", ref.fields.mapValue.message ?? "", ".fromJson(v));")
       f.print("    }")
       f.print("    return this;")
       f.print("  }")

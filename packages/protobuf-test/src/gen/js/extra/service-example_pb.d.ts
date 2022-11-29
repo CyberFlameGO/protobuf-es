@@ -108,7 +108,7 @@ export declare class ExampleResponse extends Message<ExampleResponse> {
    *
    * @generated from field: map<string, string> your_request_headers = 2;
    */
-  yourRequestHeaders: { [key: string]: string };
+  yourRequestHeaders: Map<string, string>;
 
   /**
    * contains the deadline that the server received 

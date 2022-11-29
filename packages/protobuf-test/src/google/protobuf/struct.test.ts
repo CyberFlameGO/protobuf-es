@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import type { JsonObject } from "@bufbuild/protobuf";
+import type { JsonObject, PlainMessage } from "@bufbuild/protobuf";
 import * as TS from "../../gen/ts/google/protobuf/struct_pb.js";
 import * as JS from "../../gen/js/google/protobuf/struct_pb.js";
 
@@ -29,14 +29,20 @@ describe("google.protobuf.Struct", () => {
         b: "abc",
       };
       struct = new Struct({
-        fields: {
-          a: {
-            kind: { case: "numberValue", value: 123 },
-          },
-          b: {
-            kind: { case: "stringValue", value: "abc" },
-          },
-        },
+        fields: new Map<string, PlainMessage<TS.Value>>([
+          [
+            "a",
+            {
+              kind: { case: "numberValue", value: 123 },
+            },
+          ],
+          [
+            "b",
+            {
+              kind: { case: "stringValue", value: "abc" },
+            },
+          ],
+        ]),
       });
     });
     test("encodes to JSON", () => {
@@ -48,10 +54,18 @@ describe("google.protobuf.Struct", () => {
       expect(Object.keys(got.fields).length).toBe(
         Object.keys(struct.fields).length
       );
-      expect(got.fields["a"].kind.case).toBe(struct.fields["a"].kind.case);
-      expect(got.fields["a"].kind.value).toBe(struct.fields["a"].kind.value);
-      expect(got.fields["b"].kind.case).toBe(struct.fields["b"].kind.case);
-      expect(got.fields["b"].kind.value).toBe(struct.fields["b"].kind.value);
+      expect(got.fields.get("a")?.kind.case ?? "").toBe(
+        struct.fields.get("a")?.kind.case ?? ""
+      );
+      expect(got.fields.get("a")?.kind.value ?? undefined).toBe(
+        struct.fields.get("a")?.kind.value ?? undefined
+      );
+      expect(got.fields.get("b")?.kind.case ?? undefined).toBe(
+        struct.fields.get("b")?.kind.case ?? undefined
+      );
+      expect(got.fields.get("b")?.kind.value ?? undefined).toBe(
+        struct.fields.get("b")?.kind.value ?? undefined
+      );
     });
     test("survives binary round trip", () => {
       const got = Struct.fromBinary(struct.toBinary());
@@ -101,9 +115,10 @@ describe("google.protobuf.Value with Struct field", () => {
         kind: {
           case: "structValue",
           value: new Struct({
-            fields: {
-              foo: { kind: { case: "numberValue", value: 1 } },
-            },
+            fields: new Map<
+              string,
+              PlainMessage<TS.Value> | PlainMessage<JS.Value>
+            >([["foo", { kind: { case: "numberValue", value: 1 } }]]),
           }),
         },
       });

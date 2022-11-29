@@ -74,7 +74,7 @@ export class Struct extends Message<Struct> {
    *
    * @generated from field: map<string, google.protobuf.Value> fields = 1;
    */
-  fields: { [key: string]: Value } = {};
+  fields: Map<string, Value> = new Map();;
 
   constructor(data?: PartialMessage<Struct>) {
     super();
@@ -94,7 +94,7 @@ export class Struct extends Message<Struct> {
       throw new Error("cannot decode google.protobuf.Struct from JSON " + proto3.json.debug(json));
     }
     for (const [k, v] of Object.entries(json)) {
-      this.fields[k] = Value.fromJson(v);
+      this.fields.set(k, Value.fromJson(v));
     }
     return this;
   }

@@ -95,7 +95,7 @@ export declare class TestMessageWithCustomOptions extends Message<TestMessageWit
   /**
    * @generated from field: map<string, string> map_field = 3;
    */
-  mapField: { [key: string]: string };
+  mapField: Map<string, string>;
 
   constructor(data?: PartialMessage<TestMessageWithCustomOptions>);
 

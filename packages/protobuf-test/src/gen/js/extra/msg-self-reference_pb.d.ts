@@ -36,7 +36,7 @@ export declare class SelfReferencingMessage extends Message<SelfReferencingMessa
   /**
    * @generated from field: map<string, spec.SelfReferencingMessage> self_map = 3;
    */
-  selfMap: { [key: string]: SelfReferencingMessage };
+  selfMap: Map<string, SelfReferencingMessage>;
 
   constructor(data?: PartialMessage<SelfReferencingMessage>);
 

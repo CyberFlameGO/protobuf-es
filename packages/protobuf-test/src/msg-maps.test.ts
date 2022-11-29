@@ -14,51 +14,81 @@
 
 import type { JsonValue, PlainMessage } from "@bufbuild/protobuf";
 import { describeMT } from "./helpers.js";
-import { MapsMessage as TS_MapsMessage } from "./gen/ts/extra/msg-maps_pb.js";
+import {
+  MapsMessage as TS_MapsMessage,
+  MapsEnum,
+} from "./gen/ts/extra/msg-maps_pb.js";
 import { MapsMessage as JS_MapsMessage } from "./gen/js/extra/msg-maps_pb.js";
 import { protoInt64 } from "@bufbuild/protobuf";
 
 describeMT({ ts: TS_MapsMessage, js: JS_MapsMessage }, (messageType) => {
   const defaultFields: PlainMessage<TS_MapsMessage | JS_MapsMessage> = {
-    boolStrField: {},
-    int32EnuField: {},
-    int32MsgField: {},
-    int32StrField: {},
-    int64EnuField: {},
-    int64MsgField: {},
-    int64StrField: {},
-    strBoolField: {},
-    strBytesField: {},
-    strEnuField: {},
-    strInt32Field: {},
-    strInt64Field: {},
-    strMsgField: {},
-    strStrField: {},
+    boolStrField: new Map<string, string>(),
+    int32EnuField: new Map<number, MapsEnum>(),
+    int32MsgField: new Map<number, TS_MapsMessage | JS_MapsMessage>(),
+    int32StrField: new Map<number, string>(),
+    int64EnuField: new Map<string, MapsEnum>(),
+    int64MsgField: new Map<string, TS_MapsMessage | JS_MapsMessage>(),
+    int64StrField: new Map<string, string>(),
+    strBoolField: new Map<string, boolean>(),
+    strBytesField: new Map<string, Uint8Array>(),
+    strEnuField: new Map<string, MapsEnum>(),
+    strInt32Field: new Map<string, number>(),
+    strInt64Field: new Map<string, bigint>(),
+    strMsgField: new Map<string, TS_MapsMessage | JS_MapsMessage>(),
+    strStrField: new Map<string, string>(),
   };
   const defaultJson: JsonValue = {};
   const exampleFields: PlainMessage<TS_MapsMessage | JS_MapsMessage> = {
-    strStrField: { a: "str", b: "xx" },
-    strInt32Field: { a: 123, b: 455 },
-    strInt64Field: { a: protoInt64.parse(123) },
-    strBoolField: { a: true, b: false },
-    strBytesField: {
-      a: new Uint8Array([104, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100]),
-    },
-    int32StrField: { 123: "hello" },
-    int64StrField: { "9223372036854775807": "hello" },
-    boolStrField: { true: "yes", false: "no" },
-    strMsgField: {
-      a: new messageType(), // TODO we do not support partial inputs here
-    },
-    int32MsgField: {
-      "32": new messageType(), // TODO we do not support partial inputs here
-    },
-    int64MsgField: {
-      "64": new messageType(), // TODO we do not support partial inputs here
-    },
-    strEnuField: { a: 0, b: 1, c: 2 },
-    int32EnuField: { 1: 0, 2: 1, 0: 2 },
-    int64EnuField: { "-1": 0, "2": 1, "0": 2 },
+    strStrField: new Map<string, string>([
+      ["a", "str"],
+      ["a", "xx"],
+    ]),
+    strInt32Field: new Map<string, number>([
+      ["a", 123],
+      ["b", 455],
+    ]),
+    strInt64Field: new Map<string, bigint>([["a", protoInt64.parse(123)]]),
+    strBoolField: new Map<string, boolean>([
+      ["a", true],
+      ["b", false],
+    ]),
+    strBytesField: new Map<string, Uint8Array>([
+      [
+        "a",
+        new Uint8Array([104, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100]),
+      ],
+    ]),
+    int32StrField: new Map<number, string>([[123, "hello"]]),
+    int64StrField: new Map<string, string>([["9223372036854775807", "hello"]]),
+    boolStrField: new Map<string, string>([
+      ["true", "yes"],
+      ["false", "no"],
+    ]),
+    strMsgField: new Map<string, TS_MapsMessage | JS_MapsMessage>([
+      ["a", new messageType()], // TODO we do not support partial inputs here
+    ]),
+    int32MsgField: new Map<number, TS_MapsMessage | JS_MapsMessage>([
+      [32, new messageType()], // TODO we do not support partial inputs here
+    ]),
+    int64MsgField: new Map<string, TS_MapsMessage | JS_MapsMessage>([
+      ["64", new messageType()], // TODO we do not support partial inputs here
+    ]),
+    strEnuField: new Map<string, MapsEnum>([
+      ["a", 0],
+      ["b", 1],
+      ["c", 2],
+    ]),
+    int32EnuField: new Map<number, MapsEnum>([
+      [1, 0],
+      [2, 1],
+      [0, 2],
+    ]),
+    int64EnuField: new Map<string, MapsEnum>([
+      ["-1", 0],
+      ["2", 1],
+      ["0", 2],
+    ]),
   };
   const exampleJson: JsonValue = {
     strStrField: { a: "str", b: "xx" },

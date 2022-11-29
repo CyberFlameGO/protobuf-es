@@ -19,6 +19,8 @@ import {
   TestAllTypesProto3_NestedEnum,
   ForeignEnum,
   TestAllTypesProto3_AliasedEnum,
+  TestAllTypesProto3_NestedMessage,
+  ForeignMessage,
 } from "./gen/ts/google/protobuf/test_messages_proto3_pb.js";
 
 describe("PlainMessage", () => {
@@ -93,25 +95,28 @@ describe("PlainMessage", () => {
       unpackedDouble: [],
       unpackedBool: [],
       unpackedNestedEnum: [],
-      mapInt32Int32: {},
-      mapInt64Int64: {},
-      mapUint32Uint32: {},
-      mapUint64Uint64: {},
-      mapSint32Sint32: {},
-      mapSint64Sint64: {},
-      mapFixed32Fixed32: {},
-      mapFixed64Fixed64: {},
-      mapSfixed32Sfixed32: {},
-      mapSfixed64Sfixed64: {},
-      mapInt32Float: {},
-      mapInt32Double: {},
-      mapBoolBool: {},
-      mapStringString: {},
-      mapStringBytes: {},
-      mapStringNestedMessage: {},
-      mapStringForeignMessage: {},
-      mapStringNestedEnum: {},
-      mapStringForeignEnum: {},
+      mapInt32Int32: new Map<number, number>(),
+      mapInt64Int64: new Map<string, bigint>(),
+      mapUint32Uint32: new Map<number, number>(),
+      mapUint64Uint64: new Map<string, bigint>(),
+      mapSint32Sint32: new Map<number, number>(),
+      mapSint64Sint64: new Map<string, bigint>(),
+      mapFixed32Fixed32: new Map<number, number>(),
+      mapFixed64Fixed64: new Map<string, bigint>(),
+      mapSfixed32Sfixed32: new Map<number, number>(),
+      mapSfixed64Sfixed64: new Map<string, bigint>(),
+      mapInt32Float: new Map<number, number>(),
+      mapInt32Double: new Map<number, number>(),
+      mapBoolBool: new Map<string, boolean>(),
+      mapStringString: new Map<string, string>(),
+      mapStringBytes: new Map<string, Uint8Array>(),
+      mapStringNestedMessage: new Map<
+        string,
+        TestAllTypesProto3_NestedMessage
+      >(),
+      mapStringForeignMessage: new Map<string, ForeignMessage>(),
+      mapStringNestedEnum: new Map<string, TestAllTypesProto3_NestedEnum>(),
+      mapStringForeignEnum: new Map<string, ForeignEnum>(),
       oneofField: { case: undefined },
       repeatedBoolWrapper: [],
       repeatedInt32Wrapper: [],
@@ -185,11 +190,17 @@ describe("PlainMessage", () => {
       },
     ];
 
-    msg.mapStringNestedMessage = {
-      key: {
-        a: 0,
-      },
-    };
+    msg.mapStringNestedMessage = new Map<
+      string,
+      PlainMessage<TestAllTypesProto3_NestedMessage>
+    >([
+      [
+        "key",
+        {
+          a: 0,
+        },
+      ],
+    ]);
 
     msg.oneofField = {
       case: "oneofNestedMessage",

@@ -473,92 +473,92 @@ export class MapWellKnownTypes extends Message<MapWellKnownTypes> {
   /**
    * @generated from field: map<int32, google.protobuf.Any> any_field = 1;
    */
-  anyField: { [key: number]: Any } = {};
+  anyField: Map<number, Any> = new Map();;
 
   /**
    * @generated from field: map<int32, google.protobuf.Api> api_field = 2;
    */
-  apiField: { [key: number]: Api } = {};
+  apiField: Map<number, Api> = new Map();;
 
   /**
    * @generated from field: map<int32, google.protobuf.Duration> duration_field = 3;
    */
-  durationField: { [key: number]: Duration } = {};
+  durationField: Map<number, Duration> = new Map();;
 
   /**
    * @generated from field: map<int32, google.protobuf.Empty> empty_field = 4;
    */
-  emptyField: { [key: number]: Empty } = {};
+  emptyField: Map<number, Empty> = new Map();;
 
   /**
    * @generated from field: map<int32, google.protobuf.FieldMask> field_mask_field = 5;
    */
-  fieldMaskField: { [key: number]: FieldMask } = {};
+  fieldMaskField: Map<number, FieldMask> = new Map();;
 
   /**
    * @generated from field: map<int32, google.protobuf.SourceContext> source_context_field = 6;
    */
-  sourceContextField: { [key: number]: SourceContext } = {};
+  sourceContextField: Map<number, SourceContext> = new Map();;
 
   /**
    * @generated from field: map<int32, google.protobuf.Struct> struct_field = 7;
    */
-  structField: { [key: number]: Struct } = {};
+  structField: Map<number, Struct> = new Map();;
 
   /**
    * @generated from field: map<int32, google.protobuf.Timestamp> timestamp_field = 8;
    */
-  timestampField: { [key: number]: Timestamp } = {};
+  timestampField: Map<number, Timestamp> = new Map();;
 
   /**
    * @generated from field: map<int32, google.protobuf.Type> type_field = 9;
    */
-  typeField: { [key: number]: Type } = {};
+  typeField: Map<number, Type> = new Map();;
 
   /**
    * @generated from field: map<int32, google.protobuf.DoubleValue> double_field = 10;
    */
-  doubleField: { [key: number]: DoubleValue } = {};
+  doubleField: Map<number, DoubleValue> = new Map();;
 
   /**
    * @generated from field: map<int32, google.protobuf.FloatValue> float_field = 11;
    */
-  floatField: { [key: number]: FloatValue } = {};
+  floatField: Map<number, FloatValue> = new Map();;
 
   /**
    * @generated from field: map<int32, google.protobuf.Int64Value> int64_field = 12;
    */
-  int64Field: { [key: number]: Int64Value } = {};
+  int64Field: Map<number, Int64Value> = new Map();;
 
   /**
    * @generated from field: map<int32, google.protobuf.UInt64Value> uint64_field = 13;
    */
-  uint64Field: { [key: number]: UInt64Value } = {};
+  uint64Field: Map<number, UInt64Value> = new Map();;
 
   /**
    * @generated from field: map<int32, google.protobuf.Int32Value> int32_field = 14;
    */
-  int32Field: { [key: number]: Int32Value } = {};
+  int32Field: Map<number, Int32Value> = new Map();;
 
   /**
    * @generated from field: map<int32, google.protobuf.UInt32Value> uint32_field = 15;
    */
-  uint32Field: { [key: number]: UInt32Value } = {};
+  uint32Field: Map<number, UInt32Value> = new Map();;
 
   /**
    * @generated from field: map<int32, google.protobuf.BoolValue> bool_field = 16;
    */
-  boolField: { [key: number]: BoolValue } = {};
+  boolField: Map<number, BoolValue> = new Map();;
 
   /**
    * @generated from field: map<int32, google.protobuf.StringValue> string_field = 17;
    */
-  stringField: { [key: number]: StringValue } = {};
+  stringField: Map<number, StringValue> = new Map();;
 
   /**
    * @generated from field: map<int32, google.protobuf.BytesValue> bytes_field = 18;
    */
-  bytesField: { [key: number]: BytesValue } = {};
+  bytesField: Map<number, BytesValue> = new Map();;
 
   constructor(data?: PartialMessage<MapWellKnownTypes>) {
     super();

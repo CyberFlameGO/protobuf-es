@@ -79,7 +79,7 @@ export class Configuration extends Message<Configuration> {
   /**
    * @generated from field: map<string, string> mapping = 5;
    */
-  mapping: { [key: string]: string } = {};
+  mapping: Map<string, string> = new Map();;
 
   /**
    * @generated from field: string unused = 6;

@@ -447,97 +447,97 @@ export declare class TestAllTypesProto3 extends Message<TestAllTypesProto3> {
    *
    * @generated from field: map<int32, int32> map_int32_int32 = 56;
    */
-  mapInt32Int32: { [key: number]: number };
+  mapInt32Int32: Map<number, number>;
 
   /**
    * @generated from field: map<int64, int64> map_int64_int64 = 57;
    */
-  mapInt64Int64: { [key: string]: bigint };
+  mapInt64Int64: Map<string, bigint>;
 
   /**
    * @generated from field: map<uint32, uint32> map_uint32_uint32 = 58;
    */
-  mapUint32Uint32: { [key: number]: number };
+  mapUint32Uint32: Map<number, number>;
 
   /**
    * @generated from field: map<uint64, uint64> map_uint64_uint64 = 59;
    */
-  mapUint64Uint64: { [key: string]: bigint };
+  mapUint64Uint64: Map<string, bigint>;
 
   /**
    * @generated from field: map<sint32, sint32> map_sint32_sint32 = 60;
    */
-  mapSint32Sint32: { [key: number]: number };
+  mapSint32Sint32: Map<number, number>;
 
   /**
    * @generated from field: map<sint64, sint64> map_sint64_sint64 = 61;
    */
-  mapSint64Sint64: { [key: string]: bigint };
+  mapSint64Sint64: Map<string, bigint>;
 
   /**
    * @generated from field: map<fixed32, fixed32> map_fixed32_fixed32 = 62;
    */
-  mapFixed32Fixed32: { [key: number]: number };
+  mapFixed32Fixed32: Map<number, number>;
 
   /**
    * @generated from field: map<fixed64, fixed64> map_fixed64_fixed64 = 63;
    */
-  mapFixed64Fixed64: { [key: string]: bigint };
+  mapFixed64Fixed64: Map<string, bigint>;
 
   /**
    * @generated from field: map<sfixed32, sfixed32> map_sfixed32_sfixed32 = 64;
    */
-  mapSfixed32Sfixed32: { [key: number]: number };
+  mapSfixed32Sfixed32: Map<number, number>;
 
   /**
    * @generated from field: map<sfixed64, sfixed64> map_sfixed64_sfixed64 = 65;
    */
-  mapSfixed64Sfixed64: { [key: string]: bigint };
+  mapSfixed64Sfixed64: Map<string, bigint>;
 
   /**
    * @generated from field: map<int32, float> map_int32_float = 66;
    */
-  mapInt32Float: { [key: number]: number };
+  mapInt32Float: Map<number, number>;
 
   /**
    * @generated from field: map<int32, double> map_int32_double = 67;
    */
-  mapInt32Double: { [key: number]: number };
+  mapInt32Double: Map<number, number>;
 
   /**
    * @generated from field: map<bool, bool> map_bool_bool = 68;
    */
-  mapBoolBool: { [key: string]: boolean };
+  mapBoolBool: Map<string, boolean>;
 
   /**
    * @generated from field: map<string, string> map_string_string = 69;
    */
-  mapStringString: { [key: string]: string };
+  mapStringString: Map<string, string>;
 
   /**
    * @generated from field: map<string, bytes> map_string_bytes = 70;
    */
-  mapStringBytes: { [key: string]: Uint8Array };
+  mapStringBytes: Map<string, Uint8Array>;
 
   /**
    * @generated from field: map<string, protobuf_test_messages.proto3.TestAllTypesProto3.NestedMessage> map_string_nested_message = 71;
    */
-  mapStringNestedMessage: { [key: string]: TestAllTypesProto3_NestedMessage };
+  mapStringNestedMessage: Map<string, TestAllTypesProto3_NestedMessage>;
 
   /**
    * @generated from field: map<string, protobuf_test_messages.proto3.ForeignMessage> map_string_foreign_message = 72;
    */
-  mapStringForeignMessage: { [key: string]: ForeignMessage };
+  mapStringForeignMessage: Map<string, ForeignMessage>;
 
   /**
    * @generated from field: map<string, protobuf_test_messages.proto3.TestAllTypesProto3.NestedEnum> map_string_nested_enum = 73;
    */
-  mapStringNestedEnum: { [key: string]: TestAllTypesProto3_NestedEnum };
+  mapStringNestedEnum: Map<string, TestAllTypesProto3_NestedEnum>;
 
   /**
    * @generated from field: map<string, protobuf_test_messages.proto3.ForeignEnum> map_string_foreign_enum = 74;
    */
-  mapStringForeignEnum: { [key: string]: ForeignEnum };
+  mapStringForeignEnum: Map<string, ForeignEnum>;
 
   /**
    * @generated from oneof protobuf_test_messages.proto3.TestAllTypesProto3.oneof_field

@@ -46,72 +46,72 @@ export declare class MapsMessage extends Message<MapsMessage> {
   /**
    * @generated from field: map<string, string> str_str_field = 1;
    */
-  strStrField: { [key: string]: string };
+  strStrField: Map<string, string>;
 
   /**
    * @generated from field: map<string, int32> str_int32_field = 2;
    */
-  strInt32Field: { [key: string]: number };
+  strInt32Field: Map<string, number>;
 
   /**
    * @generated from field: map<string, int64> str_int64_field = 3;
    */
-  strInt64Field: { [key: string]: bigint };
+  strInt64Field: Map<string, bigint>;
 
   /**
    * @generated from field: map<string, bool> str_bool_field = 4;
    */
-  strBoolField: { [key: string]: boolean };
+  strBoolField: Map<string, boolean>;
 
   /**
    * @generated from field: map<string, bytes> str_bytes_field = 5;
    */
-  strBytesField: { [key: string]: Uint8Array };
+  strBytesField: Map<string, Uint8Array>;
 
   /**
    * @generated from field: map<int32, string> int32_str_field = 6;
    */
-  int32StrField: { [key: number]: string };
+  int32StrField: Map<number, string>;
 
   /**
    * @generated from field: map<int64, string> int64_str_field = 7;
    */
-  int64StrField: { [key: string]: string };
+  int64StrField: Map<string, string>;
 
   /**
    * @generated from field: map<bool, string> bool_str_field = 8;
    */
-  boolStrField: { [key: string]: string };
+  boolStrField: Map<string, string>;
 
   /**
    * @generated from field: map<string, spec.MapsMessage> str_msg_field = 9;
    */
-  strMsgField: { [key: string]: MapsMessage };
+  strMsgField: Map<string, MapsMessage>;
 
   /**
    * @generated from field: map<int32, spec.MapsMessage> int32_msg_field = 10;
    */
-  int32MsgField: { [key: number]: MapsMessage };
+  int32MsgField: Map<number, MapsMessage>;
 
   /**
    * @generated from field: map<int64, spec.MapsMessage> int64_msg_field = 11;
    */
-  int64MsgField: { [key: string]: MapsMessage };
+  int64MsgField: Map<string, MapsMessage>;
 
   /**
    * @generated from field: map<string, spec.MapsEnum> str_enu_field = 12;
    */
-  strEnuField: { [key: string]: MapsEnum };
+  strEnuField: Map<string, MapsEnum>;
 
   /**
    * @generated from field: map<int32, spec.MapsEnum> int32_enu_field = 13;
    */
-  int32EnuField: { [key: number]: MapsEnum };
+  int32EnuField: Map<number, MapsEnum>;
 
   /**
    * @generated from field: map<int64, spec.MapsEnum> int64_enu_field = 14;
    */
-  int64EnuField: { [key: string]: MapsEnum };
+  int64EnuField: Map<string, MapsEnum>;
 
   constructor(data?: PartialMessage<MapsMessage>);
 

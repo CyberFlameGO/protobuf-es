@@ -1721,7 +1721,7 @@ export class TestHugeFieldNumbersLite extends Message<TestHugeFieldNumbersLite> 
   /**
    * @generated from field: map<string, string> string_string_map = 536870010;
    */
-  stringStringMap: { [key: string]: string } = {};
+  stringStringMap: Map<string, string> = new Map();;
 
   /**
    * @generated from oneof protobuf_unittest.TestHugeFieldNumbersLite.oneof_field

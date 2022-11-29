@@ -175,47 +175,47 @@ export declare class WrappersMessage extends Message<WrappersMessage> {
   /**
    * @generated from field: map<string, google.protobuf.DoubleValue> map_double_value_field = 31;
    */
-  mapDoubleValueField: { [key: string]: DoubleValue };
+  mapDoubleValueField: Map<string, DoubleValue>;
 
   /**
    * @generated from field: map<string, google.protobuf.BoolValue> map_bool_value_field = 32;
    */
-  mapBoolValueField: { [key: string]: BoolValue };
+  mapBoolValueField: Map<string, BoolValue>;
 
   /**
    * @generated from field: map<string, google.protobuf.FloatValue> map_float_value_field = 33;
    */
-  mapFloatValueField: { [key: string]: FloatValue };
+  mapFloatValueField: Map<string, FloatValue>;
 
   /**
    * @generated from field: map<string, google.protobuf.Int64Value> map_int64_value_field = 34;
    */
-  mapInt64ValueField: { [key: string]: Int64Value };
+  mapInt64ValueField: Map<string, Int64Value>;
 
   /**
    * @generated from field: map<string, google.protobuf.UInt64Value> map_uint64_value_field = 35;
    */
-  mapUint64ValueField: { [key: string]: UInt64Value };
+  mapUint64ValueField: Map<string, UInt64Value>;
 
   /**
    * @generated from field: map<string, google.protobuf.Int32Value> map_int32_value_field = 36;
    */
-  mapInt32ValueField: { [key: string]: Int32Value };
+  mapInt32ValueField: Map<string, Int32Value>;
 
   /**
    * @generated from field: map<string, google.protobuf.UInt32Value> map_uint32_value_field = 37;
    */
-  mapUint32ValueField: { [key: string]: UInt32Value };
+  mapUint32ValueField: Map<string, UInt32Value>;
 
   /**
    * @generated from field: map<string, google.protobuf.StringValue> map_string_value_field = 38;
    */
-  mapStringValueField: { [key: string]: StringValue };
+  mapStringValueField: Map<string, StringValue>;
 
   /**
    * @generated from field: map<string, google.protobuf.BytesValue> map_bytes_value_field = 39;
    */
-  mapBytesValueField: { [key: string]: BytesValue };
+  mapBytesValueField: Map<string, BytesValue>;
 
   constructor(data?: PartialMessage<WrappersMessage>);
 
