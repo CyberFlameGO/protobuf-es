@@ -159,35 +159,3 @@ describe("constructor takes partial message for map value", function () {
     }
   );
 });
-// describe("PartialMessage", () => {
-//   describe("root level", () => {
-//     const partialTimestamp: PartialMessage<Timestamp> = Timestamp.now();
-//     test("keeps regular fields", () => {
-//       // Regular fields are untouched.
-//       expect(partialTimestamp.nanos).toBeDefined();
-//     });
-//     test("removes standard methods and wkt methods from type system", () => {
-//       // We want to test that the type system sees this function as undefined even though it's still actually there.  So
-//       // we expect TS error  TS2339, but add a simple test so Jest doesn't complain there's no expectations.
-//       // @ts-expect-error TS2339
-//       expect(partialTimestamp.toBinary).toBeDefined();
-//       // Custom methods of well-known types are removed as well.
-//       // @ts-expect-error TS2339
-//       expect(partialTimestamp.toDate).toBeDefined();
-//     });
-//   });
-//   describeMT({ ts: TS_Example, js: JS_Example }, (messageType) => {
-//     test("is recursive", () => {
-//       const recur: PartialMessage<TS_Example> = new messageType();
-//       recur.created = Timestamp.now();
-
-//       // We want to test that the type system sees this function as undefined even though it's still actually there.  So
-//       // we expect TS error  TS2339, but add a simple test so Jest doesn't complain there's no expectations.
-//       // @ts-expect-error TS2339
-//       expect(recur.created.toBinary).toBeDefined();
-//       // Custom methods of well-known types are removed as well.
-//       // @ts-expect-error TS2339
-//       expect(recur.created.toDate).toBeDefined();
-//     });
-//   });
-// });
