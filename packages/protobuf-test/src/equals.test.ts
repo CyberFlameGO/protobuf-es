@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import type { PartialMessage } from "@bufbuild/protobuf";
 import { MapsMessage as TS_MapsMessage } from "./gen/ts/extra/msg-maps_pb.js";
 import { MapsMessage as JS_MapsMessage } from "./gen/js/extra/msg-maps_pb.js";
 import { MessageFieldMessage as TS_MessageFieldMessage } from "./gen/ts/extra/msg-message_pb.js";
@@ -104,70 +103,109 @@ describe("equals", function () {
     test("different order are equal", () => {
       expect(
         new messageType({
-          strMsgField: {
-            a: { strStrField: { c: "d", e: "f" } },
-          },
+          strMsgField: new Map<string, TS_MapsMessage | JS_MapsMessage>([
+            [
+              "a",
+              new messageType({
+                strStrField: new Map<string, string>([
+                  ["c", "d"],
+                  ["e", "f"],
+                ]),
+              }),
+            ],
+          ]),
         }).equals(
           new messageType({
-            strMsgField: {
-              a: { strStrField: { e: "f", c: "d" } },
-            },
+            strMsgField: new Map<string, TS_MapsMessage | JS_MapsMessage>([
+              [
+                "a",
+                new messageType({
+                  strStrField: new Map<string, string>([
+                    ["e", "f"],
+                    ["c", "d"],
+                  ]),
+                }),
+              ],
+            ]),
           })
         )
       ).toBeTruthy();
     });
     test("added key not equal", () => {
+      let innerMap = new Map<string, string>();
+      innerMap.set("c", "d");
+      innerMap.set("e", "f");
+
+      let map = new Map<string, TS_MapsMessage | JS_MapsMessage>();
+
+      // Note that we need to do new messageType here instead of just an object literal bc the map expects a full
+      // object not a partial message so we can construct a full message with a partial object literal
+      map.set("a", new messageType());
+
       expect(
         new messageType({
-          strMsgField: {
-            a: {},
-          },
+          strMsgField: map,
         }).equals(
           new messageType({
-            strMsgField: {
-              a: {},
-              b: {},
-            },
+            strMsgField: new Map<string, TS_MapsMessage | JS_MapsMessage>([
+              ["a", new messageType()],
+              ["b", new messageType()],
+            ]),
           })
         )
       ).toBeFalsy();
     });
-    test.only("removed key not equal", () => {
-      let mosMap = new Map<string, string>();
-      mosMap.set("c", "d");
-      mosMap.set("e", "f");
-
-      let innerMap = new Map<string, TS_MapsMessage>();
-
-      innerMap.set("a", {
-        strStrField: mosMap,
-      });
-
-      const berf = new messageType({
-        strMsgField: innerMap,
-      });
+    test("removed key not equal", () => {
+      // Note that we need to do new messageType here instead of just an object literal bc the map expects a full
+      // object not a partial message so we can construct a full message with a partial object literal
       expect(
-        berf.equals(
-          false
-          //   new messageType({
-          //     strMsgField: {
-          //       a: { strStrField: { c: "d" } },
-          //     },
-          //   })
+        new messageType({
+          strMsgField: new Map<string, TS_MapsMessage | JS_MapsMessage>([
+            [
+              "a",
+              new messageType({
+                strStrField: new Map<string, string>([
+                  ["c", "d"],
+                  ["e", "f"],
+                ]),
+              }),
+            ],
+          ]),
+        }).equals(
+          new messageType({
+            strMsgField: new Map<string, TS_MapsMessage | JS_MapsMessage>([
+              [
+                "a",
+                new messageType({
+                  strStrField: new Map<string, string>([["c", "d"]]),
+                }),
+              ],
+            ]),
+          })
         )
       ).toBeFalsy();
     });
     test("changed value not equal", () => {
       expect(
         new messageType({
-          strMsgField: {
-            a: { strStrField: { c: "d" } },
-          },
+          strMsgField: new Map<string, TS_MapsMessage | JS_MapsMessage>([
+            [
+              "a",
+              new messageType({
+                strStrField: new Map<string, string>([["c", "d"]]),
+              }),
+            ],
+          ]),
         }).equals(
           new messageType({
-            strMsgField: {
-              a: { strStrField: { c: "e" } },
-            },
+            strMsgField: new Map<string, TS_MapsMessage | JS_MapsMessage>([
+              [
+                "a",
+                new messageType({
+                  strStrField: new Map<string, string>([["c", "e"]]),
+                }),
+              ],
+            ]),
           })
         )
       ).toBeFalsy();

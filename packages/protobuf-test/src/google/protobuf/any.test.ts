@@ -43,9 +43,14 @@ describe("google.protobuf.Any", () => {
     test(`encodes ${Struct.typeName} to JSON`, () => {
       const typeRegistry = createRegistry(Struct, Value);
       const str = new Struct({
-        fields: {
-          foo: { kind: { case: "numberValue", value: 1 } },
-        },
+        fields: new Map<string, Value>([
+          [
+            "foo",
+            new Value({
+              kind: { case: "numberValue", value: 1 },
+            }),
+          ],
+        ]),
       });
       const got = Any.pack(str).toJson({
         typeRegistry,
@@ -130,15 +135,21 @@ describe("google.protobuf.Any", () => {
           foo: 1,
         },
       };
+      const str = new Struct({
+        fields: new Map<string, Value>([
+          [
+            "foo",
+            new Value({
+              kind: { case: "numberValue", value: 1 },
+            }),
+          ],
+        ]),
+      });
       const got = Any.pack(
         new Value({
           kind: {
             case: "structValue",
-            value: new Struct({
-              fields: {
-                foo: { kind: { case: "numberValue", value: 1 } },
-              },
-            }),
+            value: str,
           },
         })
       ).toJson({ typeRegistry });

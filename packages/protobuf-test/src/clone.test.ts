@@ -135,10 +135,10 @@ describe("clone", function () {
         new BoolValue({ value: true }),
         new BoolValue({ value: false }),
       ],
-      mapBoolValueField: {
-        foo: new BoolValue({ value: true }),
-        bar: new BoolValue({ value: false }),
-      },
+      mapBoolValueField: new Map<string, BoolValue>([
+        ["foo", new BoolValue({ value: true })],
+        ["bar", new BoolValue({ value: false })],
+      ]),
     });
     const b = a.clone();
     expect(b).toStrictEqual(a);
