@@ -76,22 +76,30 @@ describe("constructor takes partial message for map value", function () {
     { ts: TS_TestAllTypesProto3, js: JS_TestAllTypesProto3 },
     (messageType) => {
       const m = new messageType({
-        mapStringNestedMessage: {
-          key: {
-            corecursive: {
-              optionalInt32: 123,
-            },
-          },
-        },
+        mapStringNestedMessage: new Map<
+          string,
+          TS_TestAllTypesProto3_NestedMessage
+        >([
+          [
+            "key",
+            new TS_TestAllTypesProto3_NestedMessage({
+              corecursive: {
+                optionalInt32: 123,
+              },
+            }),
+          ],
+        ]),
       });
-      expect(m.mapStringNestedMessage["key"]).toBeDefined();
+      expect(m.mapStringNestedMessage.get("key")).toBeDefined();
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-      if (m.mapStringNestedMessage["key"] !== undefined) {
-        expect(m.mapStringNestedMessage["key"].a).toBe(0);
-        expect(m.mapStringNestedMessage["key"].corecursive).not.toBeUndefined();
-        expect(m.mapStringNestedMessage["key"].corecursive?.optionalInt32).toBe(
-          123
-        );
+      if (m.mapStringNestedMessage.get("key") !== undefined) {
+        expect(m.mapStringNestedMessage.get("key")?.a).toBe(0);
+        expect(
+          m.mapStringNestedMessage.get("key")?.corecursive
+        ).not.toBeUndefined();
+        expect(
+          m.mapStringNestedMessage.get("key")?.corecursive?.optionalInt32
+        ).toBe(123);
       }
     }
   );
@@ -125,9 +133,7 @@ describe("constructor takes partial message for map value", function () {
             },
           },
         ],
-        mapStringString: {
-          a: "A",
-        },
+        mapStringString: new Map<string, string>([["a", "A"]]),
         oneofField: {
           case: "oneofNestedMessage",
           value: new TS_TestAllTypesProto3_NestedMessage(),
@@ -153,3 +159,35 @@ describe("constructor takes partial message for map value", function () {
     }
   );
 });
+// describe("PartialMessage", () => {
+//   describe("root level", () => {
+//     const partialTimestamp: PartialMessage<Timestamp> = Timestamp.now();
+//     test("keeps regular fields", () => {
+//       // Regular fields are untouched.
+//       expect(partialTimestamp.nanos).toBeDefined();
+//     });
+//     test("removes standard methods and wkt methods from type system", () => {
+//       // We want to test that the type system sees this function as undefined even though it's still actually there.  So
+//       // we expect TS error  TS2339, but add a simple test so Jest doesn't complain there's no expectations.
+//       // @ts-expect-error TS2339
+//       expect(partialTimestamp.toBinary).toBeDefined();
+//       // Custom methods of well-known types are removed as well.
+//       // @ts-expect-error TS2339
+//       expect(partialTimestamp.toDate).toBeDefined();
+//     });
+//   });
+//   describeMT({ ts: TS_Example, js: JS_Example }, (messageType) => {
+//     test("is recursive", () => {
+//       const recur: PartialMessage<TS_Example> = new messageType();
+//       recur.created = Timestamp.now();
+
+//       // We want to test that the type system sees this function as undefined even though it's still actually there.  So
+//       // we expect TS error  TS2339, but add a simple test so Jest doesn't complain there's no expectations.
+//       // @ts-expect-error TS2339
+//       expect(recur.created.toBinary).toBeDefined();
+//       // Custom methods of well-known types are removed as well.
+//       // @ts-expect-error TS2339
+//       expect(recur.created.toDate).toBeDefined();
+//     });
+//   });
+// });
