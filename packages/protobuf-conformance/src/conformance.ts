@@ -130,10 +130,6 @@ function test(request: any): Result {
   try {
     if (request.protobufPayload) {
       payload = payloadType.decode(request.protobufPayload);
-      // appendFileSync(
-      //   "programming.txt",
-      //   JSON.stringify(payload) + "\n+++++++++++++++\n"
-      // );
     } else if (request.jsonPayload) {
       request.testCategory ===
         TestCategory?.options?.JSON_IGNORE_UNKNOWN_PARSING_TEST;
