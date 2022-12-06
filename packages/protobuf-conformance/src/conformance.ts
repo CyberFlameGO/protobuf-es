@@ -24,20 +24,32 @@ const anyPb = protobuf
   .resolveAll()
   .lookupType("google.protobuf.Any");
 
-const structPb = protobuf
+const struct = protobuf
   .loadSync("../../.tmp/protobuf-21.7/src/google/protobuf/struct.proto")
-  .resolveAll()
-  .lookupType("google.protobuf.Struct");
+  .resolveAll();
 
-const valuePb = protobuf
-  .loadSync("../../.tmp/protobuf-21.7/src/google/protobuf/value.proto")
-  .resolveAll()
-  .lookupType("google.protobuf.Value");
+const structPb = struct.lookupType("google.protobuf.Struct");
+const valuePb = struct.lookupType("google.protobuf.Value");
+
+const wrappers = protobuf
+  .loadSync("../../.tmp/protobuf-21.7/src/google/protobuf/wrappers.proto")
+  .resolveAll();
+const int32ValuePb = wrappers.lookupType("google.protobuf.Int32Value");
 
 const fieldMaskPb = protobuf
   .loadSync("../../.tmp/protobuf-21.7/src/google/protobuf/field_mask.proto")
   .resolveAll()
   .lookupType("google.protobuf.FieldMask");
+
+const durationPb = protobuf
+  .loadSync("../../.tmp/protobuf-21.7/src/google/protobuf/duration.proto")
+  .resolveAll()
+  .lookupType("google.protobuf.Duration");
+
+const timestampPb = protobuf
+  .loadSync("../../.tmp/protobuf-21.7/src/google/protobuf/timestamp.proto")
+  .resolveAll()
+  .lookupType("google.protobuf.Timestamp");
 
 const testMessagesProto2Pb = protobuf
   .loadSync(
@@ -53,24 +65,6 @@ const testMessagesProto3Pb = protobuf
   .resolveAll()
   .lookupType("protobuf_test_messages.proto3.TestAllTypesProto3");
 
-const registry: Registry = {
-  [testMessagesProto2Pb["fullName"].slice(1)]: testMessagesProto2Pb,
-  [testMessagesProto3Pb["fullName"].slice(1)]: testMessagesProto3Pb,
-  [structPb["fullName"].slice(1)]: structPb,
-  [valuePb["fullName"].slice(1)]: valuePb,
-  [fieldMaskPb["fullName"].slice(1)]: fieldMaskPb,
-  // "protobuf_test_messages.proto3.TestAllTypesProto3": TestAllTypesProto3,
-  [anyPb["fullName"].slice(1)]: anyPb,
-};
-// createRegistry(
-//   Value,
-//   FieldMask,
-//   Timestamp,
-//   Duration,
-//   Int32Value,
-// );
-//
-
 const conformancePb = protobuf.loadSync("./src/conformance.proto").resolveAll();
 
 const ConformanceRequest = conformancePb.lookupType(
@@ -81,6 +75,18 @@ const ConformanceResponse = conformancePb.lookupType(
 );
 const FailureSet = conformancePb.lookupType("conformance.FailureSet");
 const TestCategory = conformancePb.lookupTypeOrEnum("conformance.TestCategory");
+
+const registry: Registry = {
+  [testMessagesProto2Pb["fullName"].slice(1)]: testMessagesProto2Pb,
+  [testMessagesProto3Pb["fullName"].slice(1)]: testMessagesProto3Pb,
+  [structPb["fullName"].slice(1)]: structPb,
+  [valuePb["fullName"].slice(1)]: valuePb,
+  [fieldMaskPb["fullName"].slice(1)]: fieldMaskPb,
+  [durationPb["fullName"].slice(1)]: durationPb,
+  [int32ValuePb["fullName"].slice(1)]: int32ValuePb,
+  [anyPb["fullName"].slice(1)]: anyPb,
+  [timestampPb["fullName"].slice(1)]: timestampPb,
+};
 
 function main() {
   let testCount = 0;
