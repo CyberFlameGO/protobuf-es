@@ -1,0 +1,53 @@
+// Copyright 2021-2022 Buf Technologies, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+message Test {
+
+    string  string = 1;
+    uint32  uint32 = 2;
+    Inner   inner  = 3;
+    float   float  = 4; // make sure to set something that's fair to JSON
+
+    message Inner {
+
+        int32      int32      = 1;
+        InnerInner innerInner = 2;
+        Outer      outer      = 3;
+
+        message InnerInner {
+            int64  longField   = 1;
+            Enum   enum   = 2;
+            sint32 sint32 = 3;
+        }
+    }
+
+    enum Enum {
+
+        ONE   = 0;
+        TWO   = 1;
+        THREE = 2;
+        FOUR  = 3;
+        FIVE  = 4;
+    }
+}
+
+message Outer {
+
+    repeated bool bool = 1;
+    double double = 2; // make sure to set something that's fair to JSON
+}
+
+// bytes cannot be used

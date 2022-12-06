@@ -12,13 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {
-  ConformanceRequest,
-  ConformanceResponse,
-  FailureSet,
-  TestCategory,
-  WireFormat,
-} from "./gen/conformance/conformance_pb.js";
 import { TestAllTypesProto3 } from "./gen/google/protobuf/test_messages_proto3_pb.js";
 import { TestAllTypesProto2 } from "./gen/google/protobuf/test_messages_proto2_pb.js";
 import { readSync, writeSync } from "fs";
@@ -33,6 +26,7 @@ import {
   Timestamp,
   Value,
 } from "@bufbuild/protobuf";
+import protobuf from "protobufjs";
 
 const registry = createRegistry(
   Value,
@@ -45,6 +39,18 @@ const registry = createRegistry(
   TestAllTypesProto2,
   Any
 );
+
+const conformancePb = protobuf.loadSync("./src/conformance.proto").resolveAll();
+
+const ConformanceRequest = conformancePb.lookupType(
+  "conformance.ConformanceRequest"
+);
+const ConformanceResponse = conformancePb.lookupType(
+  "conformance.ConformanceResponse"
+);
+const FailureSet = conformancePb.lookupType("conformance.FailureSet");
+const TestCategory = conformancePb.lookupTypeOrEnum("conformance.TestCategory");
+const WireFormat = conformancePb.lookupTypeOrEnum("conformance.WireFormat");
 
 function main() {
   let testCount = 0;
@@ -60,20 +66,32 @@ function main() {
   }
 }
 
-function test(request: ConformanceRequest): ConformanceResponse["result"] {
-  if (request.messageType === FailureSet.typeName) {
+type Result =
+  | { case: "protobufPayload"; value: Uint8Array }
+  | { case: "runtimeError"; value: string }
+  | { case: "serializeError"; value: string }
+  | { case: "skipped"; value: string }
+  | { case: "jsonPayload"; value: string }
+  | { case: "parseError"; value: string };
+
+// @ts-ignore
+function test(request: any): Result {
+  if (request?.$type.name === FailureSet.name) {
     // > The conformance runner will request a list of failures as the first request.
     // > This will be known by message_type == "conformance.FailureSet", a conformance
     // > test should return a serialized FailureSet in protobuf_payload.
-    const failureSet = new FailureSet();
-    return { case: "protobufPayload", value: failureSet.toBinary() };
+    const failureSet = FailureSet.create();
+    return {
+      case: "protobufPayload",
+      value: FailureSet.encode(failureSet).finish(),
+    };
   }
 
-  const payloadType = registry.findMessage(request.messageType);
+  const payloadType = registry.findMessage(request.$type.name);
   if (!payloadType) {
     return {
       case: "runtimeError",
-      value: `unknown request message type ${request.messageType}`,
+      value: `unknown request message type ${request.$type.name}`,
     };
   }
 
@@ -86,10 +104,11 @@ function test(request: ConformanceRequest): ConformanceResponse["result"] {
         break;
 
       case "jsonPayload":
+        const ignore = false;
+        request.testCategory ===
+          TestCategory?.options?.JSON_IGNORE_UNKNOWN_PARSING_TEST;
         payload = payloadType.fromJsonString(request.payload.value, {
-          ignoreUnknownFields:
-            request.testCategory ===
-            TestCategory.JSON_IGNORE_UNKNOWN_PARSING_TEST,
+          ignoreUnknownFields: ignore,
           typeRegistry: registry,
         });
         break;
@@ -111,14 +130,14 @@ function test(request: ConformanceRequest): ConformanceResponse["result"] {
   }
 
   try {
-    switch (request.requestedOutputFormat) {
-      case WireFormat.PROTOBUF:
+    switch (request.requested_output_format) {
+      case WireFormat?.options?.PROTOBUF:
         return {
           case: "protobufPayload",
           value: payload.toBinary(),
         };
 
-      case WireFormat.JSON:
+      case WireFormat?.options?.JSON:
         return {
           case: "jsonPayload",
           value: payload.toJsonString({
@@ -126,10 +145,10 @@ function test(request: ConformanceRequest): ConformanceResponse["result"] {
           }),
         };
 
-      case WireFormat.JSPB:
+      case WireFormat?.options?.JSPB:
         return { case: "skipped", value: "JSPB not supported." };
 
-      case WireFormat.TEXT_FORMAT:
+      case WireFormat?.options?.TEXT_FORMAT:
         return { case: "skipped", value: "Text format not supported." };
 
       default:
@@ -148,9 +167,7 @@ function test(request: ConformanceRequest): ConformanceResponse["result"] {
 
 // Returns true if the test ran successfully, false on legitimate EOF.
 // If EOF is encountered in an unexpected place, raises IOError.
-function testIo(
-  test: (request: ConformanceRequest) => ConformanceResponse["result"]
-): boolean {
+function testIo(test: (request: any) => Result): boolean {
   setBlockingStdout();
   const requestLengthBuf = readBuffer(4);
   if (requestLengthBuf === "EOF") {
@@ -161,10 +178,11 @@ function testIo(
   if (serializedRequest === "EOF") {
     throw "Failed to read request.";
   }
-  const request = ConformanceRequest.fromBinary(serializedRequest);
-  const response = new ConformanceResponse();
-  response.result = test(request);
-  const serializedResponse = response.toBinary();
+  const request = ConformanceRequest.decode(serializedRequest);
+  const response = ConformanceResponse.create({
+    result: test(request),
+  });
+  const serializedResponse = ConformanceResponse.encode(response).finish();
   const responseLengthBuf = Buffer.alloc(4);
   responseLengthBuf.writeInt32LE(serializedResponse.length, 0);
   writeBuffer(responseLengthBuf);
