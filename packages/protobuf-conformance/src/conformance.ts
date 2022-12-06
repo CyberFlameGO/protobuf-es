@@ -12,33 +12,64 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { TestAllTypesProto3 } from "./gen/google/protobuf/test_messages_proto3_pb.js";
-import { TestAllTypesProto2 } from "./gen/google/protobuf/test_messages_proto2_pb.js";
 import { readSync, writeSync } from "fs";
-import {
-  Any,
-  createRegistry,
-  Duration,
-  FieldMask,
-  Int32Value,
-  Message,
-  Struct,
-  Timestamp,
-  Value,
-} from "@bufbuild/protobuf";
 import protobuf from "protobufjs";
 
-const registry = createRegistry(
-  Value,
-  Struct,
-  FieldMask,
-  Timestamp,
-  Duration,
-  Int32Value,
-  TestAllTypesProto3,
-  TestAllTypesProto2,
-  Any
-);
+interface Registry {
+  [s: string]: any;
+}
+
+const anyPb = protobuf
+  .loadSync("../../.tmp/protobuf-21.7/src/google/protobuf/any.proto")
+  .resolveAll()
+  .lookupType("google.protobuf.Any");
+
+const structPb = protobuf
+  .loadSync("../../.tmp/protobuf-21.7/src/google/protobuf/struct.proto")
+  .resolveAll()
+  .lookupType("google.protobuf.Struct");
+
+const valuePb = protobuf
+  .loadSync("../../.tmp/protobuf-21.7/src/google/protobuf/value.proto")
+  .resolveAll()
+  .lookupType("google.protobuf.Value");
+
+const fieldMaskPb = protobuf
+  .loadSync("../../.tmp/protobuf-21.7/src/google/protobuf/field_mask.proto")
+  .resolveAll()
+  .lookupType("google.protobuf.FieldMask");
+
+const testMessagesProto2Pb = protobuf
+  .loadSync(
+    "../../.tmp/protobuf-21.7/src/google/protobuf/test_messages_proto2.proto"
+  )
+  .resolveAll()
+  .lookupType("protobuf_test_messages.proto2.TestAllTypesProto2");
+
+const testMessagesProto3Pb = protobuf
+  .loadSync(
+    "../../.tmp/protobuf-21.7/src/google/protobuf/test_messages_proto3.proto"
+  )
+  .resolveAll()
+  .lookupType("protobuf_test_messages.proto3.TestAllTypesProto3");
+
+const registry: Registry = {
+  [testMessagesProto2Pb["fullName"].slice(1)]: testMessagesProto2Pb,
+  [testMessagesProto3Pb["fullName"].slice(1)]: testMessagesProto3Pb,
+  [structPb["fullName"].slice(1)]: structPb,
+  [valuePb["fullName"].slice(1)]: valuePb,
+  [fieldMaskPb["fullName"].slice(1)]: fieldMaskPb,
+  // "protobuf_test_messages.proto3.TestAllTypesProto3": TestAllTypesProto3,
+  [anyPb["fullName"].slice(1)]: anyPb,
+};
+// createRegistry(
+//   Value,
+//   FieldMask,
+//   Timestamp,
+//   Duration,
+//   Int32Value,
+// );
+//
 
 const conformancePb = protobuf.loadSync("./src/conformance.proto").resolveAll();
 
@@ -50,7 +81,6 @@ const ConformanceResponse = conformancePb.lookupType(
 );
 const FailureSet = conformancePb.lookupType("conformance.FailureSet");
 const TestCategory = conformancePb.lookupTypeOrEnum("conformance.TestCategory");
-const WireFormat = conformancePb.lookupTypeOrEnum("conformance.WireFormat");
 
 function main() {
   let testCount = 0;
@@ -66,59 +96,47 @@ function main() {
   }
 }
 
-type Result =
-  | { case: "protobufPayload"; value: Uint8Array }
-  | { case: "runtimeError"; value: string }
-  | { case: "serializeError"; value: string }
-  | { case: "skipped"; value: string }
-  | { case: "jsonPayload"; value: string }
-  | { case: "parseError"; value: string };
+interface Result {
+  [s: string]: any;
+}
 
 // @ts-ignore
 function test(request: any): Result {
-  if (request?.$type.name === FailureSet.name) {
+  if (request.messageType === FailureSet.name) {
     // > The conformance runner will request a list of failures as the first request.
     // > This will be known by message_type == "conformance.FailureSet", a conformance
     // > test should return a serialized FailureSet in protobuf_payload.
     const failureSet = FailureSet.create();
     return {
-      case: "protobufPayload",
-      value: FailureSet.encode(failureSet).finish(),
+      protobufPayload: FailureSet.encode(failureSet).finish(),
     };
   }
 
-  const payloadType = registry.findMessage(request.$type.name);
+  const payloadType = registry[request.messageType];
   if (!payloadType) {
     return {
-      case: "runtimeError",
-      value: `unknown request message type ${request.$type.name}`,
+      runtimeError: `unknown request message type ${request.messageType}`,
     };
   }
 
-  let payload: Message;
+  let payload: any;
 
   try {
-    switch (request.payload.case) {
-      case "protobufPayload":
-        payload = payloadType.fromBinary(request.payload.value);
-        break;
-
-      case "jsonPayload":
-        const ignore = false;
-        request.testCategory ===
-          TestCategory?.options?.JSON_IGNORE_UNKNOWN_PARSING_TEST;
-        payload = payloadType.fromJsonString(request.payload.value, {
-          ignoreUnknownFields: ignore,
-          typeRegistry: registry,
-        });
-        break;
-
-      default:
-        // We use a failure list instead of skipping, because that is more transparent.
-        return {
-          case: "runtimeError",
-          value: `${request.payload.case ?? "?"} not supported`,
-        };
+    if (request.protobufPayload) {
+      payload = payloadType.decode(request.protobufPayload);
+      // appendFileSync(
+      //   "programming.txt",
+      //   JSON.stringify(payload) + "\n+++++++++++++++\n"
+      // );
+    } else if (request.jsonPayload) {
+      request.testCategory ===
+        TestCategory?.options?.JSON_IGNORE_UNKNOWN_PARSING_TEST;
+      payload = payloadType.fromObject(JSON.parse(request.jsonPayload));
+    } else {
+      // We use a failure list instead of skipping, because that is more transparent.
+      return {
+        runtimeError: `payload not supported`,
+      };
     }
   } catch (err) {
     // > This string should be set to indicate parsing failed.  The string can
@@ -126,42 +144,37 @@ function test(request: any): Result {
     // >
     // > Setting this string does not necessarily mean the testee failed the
     // > test.  Some of the test cases are intentionally invalid input.
-    return { case: "parseError", value: String(err) };
+    return { parseError: String(err) };
   }
 
   try {
-    switch (request.requested_output_format) {
-      case WireFormat?.options?.PROTOBUF:
+    switch (request.requestedOutputFormat) {
+      case 1: // PROTOBUF
         return {
-          case: "protobufPayload",
-          value: payload.toBinary(),
+          protobufPayload: payloadType.encode(payload),
         };
 
-      case WireFormat?.options?.JSON:
+      case 2: // JSON:
         return {
-          case: "jsonPayload",
-          value: payload.toJsonString({
-            typeRegistry: registry,
-          }),
+          jsonPayload: JSON.stringify(payloadType.toObject(payload)),
         };
 
-      case WireFormat?.options?.JSPB:
-        return { case: "skipped", value: "JSPB not supported." };
+      case 3: // JSPB
+        return { skipped: "JSPB not supported." };
 
-      case WireFormat?.options?.TEXT_FORMAT:
-        return { case: "skipped", value: "Text format not supported." };
+      case 4: // TEXT_FORMAT
+        return { skipped: "Text format not supported." };
 
       default:
         return {
-          case: "runtimeError",
-          value: `unknown requested output format ${request.requestedOutputFormat}`,
+          runtimeError: `unknown requested output format ${request.requestedOutputFormat}`,
         };
     }
   } catch (err) {
     // > If the input was successfully parsed but errors occurred when
     // > serializing it to the requested output format, set the error message in
     // > this field.
-    return { case: "serializeError", value: String(err) };
+    return { serializeError: String(err) };
   }
 }
 
@@ -179,9 +192,8 @@ function testIo(test: (request: any) => Result): boolean {
     throw "Failed to read request.";
   }
   const request = ConformanceRequest.decode(serializedRequest);
-  const response = ConformanceResponse.create({
-    result: test(request),
-  });
+  const result = test(request);
+  const response = ConformanceResponse.create(result);
   const serializedResponse = ConformanceResponse.encode(response).finish();
   const responseLengthBuf = Buffer.alloc(4);
   responseLengthBuf.writeInt32LE(serializedResponse.length, 0);
