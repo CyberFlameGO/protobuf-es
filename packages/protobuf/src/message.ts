@@ -206,19 +206,8 @@ type PartialField<F> =
   : F extends Message<infer U> ? PartialMessage<U>
   : F extends OneofSelectedMessage<infer C, infer V> ? {case: C; value: PartialMessage<V>}
   : F extends { case: string | undefined; value?: unknown; } ? F
-  : F extends Map<infer K, Message<infer V>> ? Array<[K, PartialMessage<V>]>
-  : F extends Map<infer K, infer V> ? Array<[K, V]>
+  : F extends {[key: string|number]: Message<infer U>} ? {[key: string|number]: PartialMessage<U>}
   : F ;
-
-// type PartialField<F> =
-//   F extends (Date | Uint8Array | bigint | boolean | string | number) ? F
-//   : F extends Array<infer U> ? Array<PartialField<U>>
-//   : F extends ReadonlyArray<infer U> ? ReadonlyArray<PartialField<U>>
-//   : F extends Message<infer U> ? PartialMessage<U>
-//   : F extends OneofSelectedMessage<infer C, infer V> ? {case: C; value: PartialMessage<V>}
-//   : F extends { case: string | undefined; value?: unknown; } ? F
-//   : F extends {[key: string|number]: Message<infer U>} ? {[key: string|number]: PartialMessage<U>}
-//   : F ;
 
 type OneofSelectedMessage<K extends string, M extends Message<M>> = {
   case: K;
