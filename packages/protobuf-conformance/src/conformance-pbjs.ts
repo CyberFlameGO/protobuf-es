@@ -13,18 +13,12 @@
 // limitations under the License.
 
 import { readSync, writeSync } from "fs";
-import protobuf from "protobufjs";
 
 interface Registry {
   [s: string]: any;
 }
 
-const protobufPath = "../../.tmp/protobuf-21.7";
-
 import * as protos from "./gen/protobufjs/protos_pb.js";
-
-// @ts-ignore
-// import * as proto2 from "./gen/protobufjs/test_messages_proto2_pb.js";
 
 const Any = protos.google.protobuf.Any;
 const Struct = protos.google.protobuf.Struct;
@@ -33,20 +27,17 @@ const Int32Value = protos.google.protobuf.Int32Value;
 const FieldMask = protos.google.protobuf.FieldMask;
 const Duration = protos.google.protobuf.Duration;
 const Timestamp = protos.google.protobuf.Timestamp;
+const TestAllTypesProto2 =
+  protos.protobuf_test_messages.proto2.TestAllTypesProto2;
 const TestAllTypesProto3 =
   protos.protobuf_test_messages.proto3.TestAllTypesProto3;
-
-const TestAllTypesProto2 = protobuf
-  .loadSync(`${protobufPath}/src/google/protobuf/test_messages_proto2.proto`)
-  .resolveAll()
-  .lookupType("protobuf_test_messages.proto2.TestAllTypesProto2");
 
 const ConformanceRequest = protos.conformance.ConformanceRequest;
 const ConformanceResponse = protos.conformance.ConformanceResponse;
 const FailureSet = protos.conformance.FailureSet;
 
 const registry: Registry = {
-  [TestAllTypesProto2["fullName"].slice(1)]: TestAllTypesProto2,
+  "protobuf_test_messages.proto2.TestAllTypesProto2": TestAllTypesProto2,
   "protobuf_test_messages.proto3.TestAllTypesProto3": TestAllTypesProto3,
   "google.protobuf.Struct": Struct,
   "google.protobuf.Value": Value,
