@@ -14,8 +14,10 @@
   },
   "dependencies": {
     "@bufbuild/protobuf": "0.4.0",
+    "@types/long": "^5.0.0",
     "@types/node": "^18.8.0",
     "long": "^5.2.1",
-    "protobufjs": "^7.1.2"
+    "protobufjs": "^7.1.2",
+    "protobufjs-cli": "^1.0.2"
   }
 }

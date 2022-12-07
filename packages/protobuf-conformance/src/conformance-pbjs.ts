@@ -21,70 +21,40 @@ interface Registry {
 
 const protobufPath = "../../.tmp/protobuf-21.7";
 
-const Any = protobuf
-  .loadSync(`${protobufPath}/src/google/protobuf/any.proto`)
-  .resolveAll()
-  .lookupType("google.protobuf.Any");
+import * as protos from "./gen/protobufjs/protos_pb.js";
 
-const struct = protobuf
-  .loadSync(`${protobufPath}/src/google/protobuf/struct.proto`)
-  .resolveAll();
+// @ts-ignore
+// import * as proto2 from "./gen/protobufjs/test_messages_proto2_pb.js";
 
-const Struct = struct.lookupType("google.protobuf.Struct");
-const Value = struct.lookupType("google.protobuf.Value");
-
-const wrappers = protobuf
-  .loadSync(`${protobufPath}/src/google/protobuf/wrappers.proto`)
-  .resolveAll();
-const Int32Value = wrappers.lookupType("google.protobuf.Int32Value");
-
-const FieldMask = protobuf
-  .loadSync(`${protobufPath}/src/google/protobuf/field_mask.proto`)
-  .resolveAll()
-  .lookupType("google.protobuf.FieldMask");
-
-const Duration = protobuf
-  .loadSync(`${protobufPath}/src/google/protobuf/duration.proto`)
-  .resolveAll()
-  .lookupType("google.protobuf.Duration");
-
-const Timestamp = protobuf
-  .loadSync(`${protobufPath}/src/google/protobuf/timestamp.proto`)
-  .resolveAll()
-  .lookupType("google.protobuf.Timestamp");
+const Any = protos.google.protobuf.Any;
+const Struct = protos.google.protobuf.Struct;
+const Value = protos.google.protobuf.Value;
+const Int32Value = protos.google.protobuf.Int32Value;
+const FieldMask = protos.google.protobuf.FieldMask;
+const Duration = protos.google.protobuf.Duration;
+const Timestamp = protos.google.protobuf.Timestamp;
+const TestAllTypesProto3 =
+  protos.protobuf_test_messages.proto3.TestAllTypesProto3;
 
 const TestAllTypesProto2 = protobuf
   .loadSync(`${protobufPath}/src/google/protobuf/test_messages_proto2.proto`)
   .resolveAll()
   .lookupType("protobuf_test_messages.proto2.TestAllTypesProto2");
 
-const TestAllTypesProto3 = protobuf
-  .loadSync(`${protobufPath}/src/google/protobuf/test_messages_proto3.proto`)
-  .resolveAll()
-  .lookupType("protobuf_test_messages.proto3.TestAllTypesProto3");
-
-const conformancePb = protobuf
-  .loadSync(`${protobufPath}/conformance/conformance.proto`)
-  .resolveAll();
-
-const ConformanceRequest = conformancePb.lookupType(
-  "conformance.ConformanceRequest"
-);
-const ConformanceResponse = conformancePb.lookupType(
-  "conformance.ConformanceResponse"
-);
-const FailureSet = conformancePb.lookupType("conformance.FailureSet");
+const ConformanceRequest = protos.conformance.ConformanceRequest;
+const ConformanceResponse = protos.conformance.ConformanceResponse;
+const FailureSet = protos.conformance.FailureSet;
 
 const registry: Registry = {
   [TestAllTypesProto2["fullName"].slice(1)]: TestAllTypesProto2,
-  [TestAllTypesProto3["fullName"].slice(1)]: TestAllTypesProto3,
-  [Struct["fullName"].slice(1)]: Struct,
-  [Value["fullName"].slice(1)]: Value,
-  [FieldMask["fullName"].slice(1)]: FieldMask,
-  [Duration["fullName"].slice(1)]: Duration,
-  [Int32Value["fullName"].slice(1)]: Int32Value,
-  [Any["fullName"].slice(1)]: Any,
-  [Timestamp["fullName"].slice(1)]: Timestamp,
+  "protobuf_test_messages.proto3.TestAllTypesProto3": TestAllTypesProto3,
+  "google.protobuf.Struct": Struct,
+  "google.protobuf.Value": Value,
+  "google.protobuf.FieldMask": FieldMask,
+  "google.protobuf.Duration": Duration,
+  "google.protobuf.Int32Value": Int32Value,
+  "google.protobuf.Any": Any,
+  "google.protobuf.Timestamp": Timestamp,
 };
 
 function main() {

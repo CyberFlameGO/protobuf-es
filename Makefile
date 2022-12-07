@@ -128,6 +128,12 @@ $(GEN)/protobuf-conformance: $(BIN)/protoc $(BUILD)/protoc-gen-es Makefile
 		conformance/conformance.proto \
 		google/protobuf/test_messages_proto2.proto \
 		google/protobuf/test_messages_proto3.proto
+	@mkdir -p packages/protobuf-conformance/src/gen/protobufjs
+	@npx pbjs -t static -w es6 -o packages/protobuf-conformance/src/gen/protobufjs/protos_pb.js $(PB)/conformance/conformance.proto $(PB)/src/google/protobuf/any.proto $(PB)/src/google/protobuf/field_mask.proto $(PB)/src/google/protobuf/timestamp.proto $(PB)/src/google/protobuf/duration.proto $(PB)/src/google/protobuf/struct.proto $(PB)/src/google/protobuf/wrappers.proto $(PB)/src/google/protobuf/test_messages_proto3.proto
+	@npx pbjs -t static -w es6 -o packages/protobuf-conformance/src/gen/protobufjs/test_messages_proto2_pb.js $(PB)/src/google/protobuf/test_messages_proto2.proto
+	@npx pbts -o packages/protobuf-conformance/src/gen/protobufjs/protos_pb.d.ts packages/protobuf-conformance/src/gen/protobufjs/protos_pb.js
+	@npx pbts -o packages/protobuf-conformance/src/gen/protobufjs/test_messages_proto2_pb.d.ts packages/protobuf-conformance/src/gen/protobufjs/test_messages_proto2_pb.js
+	cp packages/protobuf-conformance/src/gen/protobufjs/*.js packages/protobuf-conformance/dist/esm/gen/protobufjs/
 	@mkdir -p $(@D)
 	@touch $(@)
 
