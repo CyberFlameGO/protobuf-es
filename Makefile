@@ -178,6 +178,12 @@ test-conformance: $(BIN)/conformance_test_runner $(BUILD)/protobuf-conformance
 		&& BUF_BIGINT_DISABLE=0 $(abspath $(BIN)/conformance_test_runner) --enforce_recommended --failure_list failing_tests_with_bigint.txt    --text_format_failure_list failing_tests_text_format.txt bin/conformance_esm.js \
 		&& BUF_BIGINT_DISABLE=1 $(abspath $(BIN)/conformance_test_runner) --enforce_recommended --failure_list failing_tests_without_bigint.txt --text_format_failure_list failing_tests_text_format.txt bin/conformance_esm.js
 
+.PHONY: test-conformance-pbjs
+test-conformance-pbjs: $(BIN)/conformance_test_runner $(BUILD)/protobuf-conformance
+	cd packages/protobuf-conformance \
+		&& BUF_BIGINT_DISABLE=0 $(abspath $(BIN)/conformance_test_runner) --enforce_recommended --failure_list failing_tests_with_bigint_pbjs.txt    --text_format_failure_list failing_tests_text_format_pbjs.txt bin/conformance_esm_pbjs.js \
+		&& BUF_BIGINT_DISABLE=1 $(abspath $(BIN)/conformance_test_runner) --enforce_recommended --failure_list failing_tests_without_bigint_pbjs.txt --text_format_failure_list failing_tests_text_format_pbjs.txt bin/conformance_esm_pbjs.js
+
 .PHONY: test-ts-compat
 test-ts-compat: $(GEN)/protobuf-test node_modules 
 	@for number in $(TS_VERSIONS) ; do \

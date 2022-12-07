@@ -12,81 +12,39 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import {
+  ConformanceRequest,
+  ConformanceResponse,
+  FailureSet,
+  TestCategory,
+  WireFormat,
+} from "./gen/conformance/conformance_pb.js";
+import { TestAllTypesProto3 } from "./gen/google/protobuf/test_messages_proto3_pb.js";
+import { TestAllTypesProto2 } from "./gen/google/protobuf/test_messages_proto2_pb.js";
 import { readSync, writeSync } from "fs";
-import protobuf from "protobufjs";
+import {
+  Any,
+  createRegistry,
+  Duration,
+  FieldMask,
+  Int32Value,
+  Message,
+  Struct,
+  Timestamp,
+  Value,
+} from "@bufbuild/protobuf";
 
-interface Registry {
-  [s: string]: any;
-}
-
-const anyPb = protobuf
-  .loadSync("../../.tmp/protobuf-21.7/src/google/protobuf/any.proto")
-  .resolveAll()
-  .lookupType("google.protobuf.Any");
-
-const struct = protobuf
-  .loadSync("../../.tmp/protobuf-21.7/src/google/protobuf/struct.proto")
-  .resolveAll();
-
-const structPb = struct.lookupType("google.protobuf.Struct");
-const valuePb = struct.lookupType("google.protobuf.Value");
-
-const wrappers = protobuf
-  .loadSync("../../.tmp/protobuf-21.7/src/google/protobuf/wrappers.proto")
-  .resolveAll();
-const int32ValuePb = wrappers.lookupType("google.protobuf.Int32Value");
-
-const fieldMaskPb = protobuf
-  .loadSync("../../.tmp/protobuf-21.7/src/google/protobuf/field_mask.proto")
-  .resolveAll()
-  .lookupType("google.protobuf.FieldMask");
-
-const durationPb = protobuf
-  .loadSync("../../.tmp/protobuf-21.7/src/google/protobuf/duration.proto")
-  .resolveAll()
-  .lookupType("google.protobuf.Duration");
-
-const timestampPb = protobuf
-  .loadSync("../../.tmp/protobuf-21.7/src/google/protobuf/timestamp.proto")
-  .resolveAll()
-  .lookupType("google.protobuf.Timestamp");
-
-const testMessagesProto2Pb = protobuf
-  .loadSync(
-    "../../.tmp/protobuf-21.7/src/google/protobuf/test_messages_proto2.proto"
-  )
-  .resolveAll()
-  .lookupType("protobuf_test_messages.proto2.TestAllTypesProto2");
-
-const testMessagesProto3Pb = protobuf
-  .loadSync(
-    "../../.tmp/protobuf-21.7/src/google/protobuf/test_messages_proto3.proto"
-  )
-  .resolveAll()
-  .lookupType("protobuf_test_messages.proto3.TestAllTypesProto3");
-
-const conformancePb = protobuf.loadSync("./src/conformance.proto").resolveAll();
-
-const ConformanceRequest = conformancePb.lookupType(
-  "conformance.ConformanceRequest"
+const registry = createRegistry(
+  Value,
+  Struct,
+  FieldMask,
+  Timestamp,
+  Duration,
+  Int32Value,
+  TestAllTypesProto3,
+  TestAllTypesProto2,
+  Any
 );
-const ConformanceResponse = conformancePb.lookupType(
-  "conformance.ConformanceResponse"
-);
-const FailureSet = conformancePb.lookupType("conformance.FailureSet");
-const TestCategory = conformancePb.lookupTypeOrEnum("conformance.TestCategory");
-
-const registry: Registry = {
-  [testMessagesProto2Pb["fullName"].slice(1)]: testMessagesProto2Pb,
-  [testMessagesProto3Pb["fullName"].slice(1)]: testMessagesProto3Pb,
-  [structPb["fullName"].slice(1)]: structPb,
-  [valuePb["fullName"].slice(1)]: valuePb,
-  [fieldMaskPb["fullName"].slice(1)]: fieldMaskPb,
-  [durationPb["fullName"].slice(1)]: durationPb,
-  [int32ValuePb["fullName"].slice(1)]: int32ValuePb,
-  [anyPb["fullName"].slice(1)]: anyPb,
-  [timestampPb["fullName"].slice(1)]: timestampPb,
-};
 
 function main() {
   let testCount = 0;
@@ -102,43 +60,46 @@ function main() {
   }
 }
 
-interface Result {
-  [s: string]: any;
-}
-
-// @ts-ignore
-function test(request: any): Result {
-  if (request.messageType === FailureSet.name) {
+function test(request: ConformanceRequest): ConformanceResponse["result"] {
+  if (request.messageType === FailureSet.typeName) {
     // > The conformance runner will request a list of failures as the first request.
     // > This will be known by message_type == "conformance.FailureSet", a conformance
     // > test should return a serialized FailureSet in protobuf_payload.
-    const failureSet = FailureSet.create();
-    return {
-      protobufPayload: FailureSet.encode(failureSet).finish(),
-    };
+    const failureSet = new FailureSet();
+    return { case: "protobufPayload", value: failureSet.toBinary() };
   }
 
-  const payloadType = registry[request.messageType];
+  const payloadType = registry.findMessage(request.messageType);
   if (!payloadType) {
     return {
-      runtimeError: `unknown request message type ${request.messageType}`,
+      case: "runtimeError",
+      value: `unknown request message type ${request.messageType}`,
     };
   }
 
-  let payload: any;
+  let payload: Message;
 
   try {
-    if (request.protobufPayload) {
-      payload = payloadType.decode(request.protobufPayload);
-    } else if (request.jsonPayload) {
-      request.testCategory ===
-        TestCategory?.options?.JSON_IGNORE_UNKNOWN_PARSING_TEST;
-      payload = payloadType.fromObject(JSON.parse(request.jsonPayload));
-    } else {
-      // We use a failure list instead of skipping, because that is more transparent.
-      return {
-        runtimeError: `payload not supported`,
-      };
+    switch (request.payload.case) {
+      case "protobufPayload":
+        payload = payloadType.fromBinary(request.payload.value);
+        break;
+
+      case "jsonPayload":
+        payload = payloadType.fromJsonString(request.payload.value, {
+          ignoreUnknownFields:
+            request.testCategory ===
+            TestCategory.JSON_IGNORE_UNKNOWN_PARSING_TEST,
+          typeRegistry: registry,
+        });
+        break;
+
+      default:
+        // We use a failure list instead of skipping, because that is more transparent.
+        return {
+          case: "runtimeError",
+          value: `${request.payload.case ?? "?"} not supported`,
+        };
     }
   } catch (err) {
     // > This string should be set to indicate parsing failed.  The string can
@@ -146,43 +107,50 @@ function test(request: any): Result {
     // >
     // > Setting this string does not necessarily mean the testee failed the
     // > test.  Some of the test cases are intentionally invalid input.
-    return { parseError: String(err) };
+    return { case: "parseError", value: String(err) };
   }
 
   try {
     switch (request.requestedOutputFormat) {
-      case 1: // PROTOBUF
+      case WireFormat.PROTOBUF:
         return {
-          protobufPayload: payloadType.encode(payload),
+          case: "protobufPayload",
+          value: payload.toBinary(),
         };
 
-      case 2: // JSON:
+      case WireFormat.JSON:
         return {
-          jsonPayload: JSON.stringify(payloadType.toObject(payload)),
+          case: "jsonPayload",
+          value: payload.toJsonString({
+            typeRegistry: registry,
+          }),
         };
 
-      case 3: // JSPB
-        return { skipped: "JSPB not supported." };
+      case WireFormat.JSPB:
+        return { case: "skipped", value: "JSPB not supported." };
 
-      case 4: // TEXT_FORMAT
-        return { skipped: "Text format not supported." };
+      case WireFormat.TEXT_FORMAT:
+        return { case: "skipped", value: "Text format not supported." };
 
       default:
         return {
-          runtimeError: `unknown requested output format ${request.requestedOutputFormat}`,
+          case: "runtimeError",
+          value: `unknown requested output format ${request.requestedOutputFormat}`,
         };
     }
   } catch (err) {
     // > If the input was successfully parsed but errors occurred when
     // > serializing it to the requested output format, set the error message in
     // > this field.
-    return { serializeError: String(err) };
+    return { case: "serializeError", value: String(err) };
   }
 }
 
 // Returns true if the test ran successfully, false on legitimate EOF.
 // If EOF is encountered in an unexpected place, raises IOError.
-function testIo(test: (request: any) => Result): boolean {
+function testIo(
+  test: (request: ConformanceRequest) => ConformanceResponse["result"]
+): boolean {
   setBlockingStdout();
   const requestLengthBuf = readBuffer(4);
   if (requestLengthBuf === "EOF") {
@@ -193,10 +161,10 @@ function testIo(test: (request: any) => Result): boolean {
   if (serializedRequest === "EOF") {
     throw "Failed to read request.";
   }
-  const request = ConformanceRequest.decode(serializedRequest);
-  const result = test(request);
-  const response = ConformanceResponse.create(result);
-  const serializedResponse = ConformanceResponse.encode(response).finish();
+  const request = ConformanceRequest.fromBinary(serializedRequest);
+  const response = new ConformanceResponse();
+  response.result = test(request);
+  const serializedResponse = response.toBinary();
   const responseLengthBuf = Buffer.alloc(4);
   responseLengthBuf.writeInt32LE(serializedResponse.length, 0);
   writeBuffer(responseLengthBuf);
